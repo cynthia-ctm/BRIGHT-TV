@@ -1,0 +1,111 @@
+SELECT DISTINCT `Age`, `province`,
+Case 
+when `Age` Between 0 AND 10 THEN 'Kids'
+when `Age` Between 11 AND 19 THEN 'Teenagers'
+when `Age` Between 20 AND 30 THEN 'Youth'
+when `Age` Between 31 AND 40 THEN 'Adults'
+when `Age` Between 41 AND 114 THEN 'Senior'
+Else 'Nothing'
+End AS Age_Group
+From `bright-tv-459320.brighttv.User profile_table` AS a 
+FULL OUTER JOIN `bright-tv-459320.brighttv.Viewership_table` as b
+On a.userID = b.UserID;
+
+
+Select DISTINCT `social Media Handle`, `Gender`, `province`,`Duration 2` As Time_Spent,
+From `bright-tv-459320.brighttv.User profile_table` as a Join 
+`bright-tv-459320.brighttv.Viewership_table` as b 
+On a.userID = b. UserID
+order by `Duration 2`
+DESC
+limit 15;
+
+Select Distinct `Race`,`Channel2`, `Province`
+From `bright-tv-459320.brighttv.User profile_table` as a 
+join `bright-tv-459320.brighttv.Viewership_table` as b On  a.userID = B. UserId
+Order By Race
+desc
+limit 15;
+
+
+
+SELECT 
+  `channel2`,
+  COUNT(*) AS total_views
+FROM `bright-tv-459320.brighttv.Viewership_table`
+GROUP BY 
+  `channel2`
+ORDER BY 
+  total_views DESC;
+
+
+SELECT DISTINCT `province`
+FROM `bright-tv-459320.brighttv.User profile_table`;
+
+SELECT Distinct `province`,
+  COUNT(Channel2) AS total_views
+FROM `bright-tv-459320.brighttv.Viewership_table` b
+JOIN `bright-tv-459320.brighttv.User profile_table` a
+ON b.userid = a.userid
+GROUP BY 
+  province
+ORDER BY 
+  total_views
+DESC;
+
+
+
+
+
+
+SELECT DISTINCT`province`,`channel2`,
+  COUNT(Channel2) AS total_views
+FROM 
+  `bright-tv-459320.brighttv.Viewership_table` B
+JOIN 
+  `bright-tv-459320.brighttv.User profile_table` A
+ON 
+  B.userID = A.UserID
+GROUP BY 
+  province, B.Channel2
+ORDER BY 
+  province, total_views 
+  DESC;
+
+SELECT *
+FROM (
+  SELECT 
+    `province`,
+    `channel2`,
+    COUNT(b.UserID) AS total_views,
+    ROW_NUMBER() OVER (PARTITION BY a.province ORDER BY COUNT(b.UserID) DESC) AS rank
+  FROM `bright-tv-459320.brighttv.Viewership_table` b
+  JOIN 
+    `bright-tv-459320.brighttv.User profile_table` a
+  ON 
+    b.userid = a.userid
+  GROUP BY 
+a.province, b.Channel2
+)
+WHERE rank <= 3
+ORDER BY province, rank;
+
+
+
+SELECT Count (Distinct b.userID) as total_Views,
+  CASE 
+    WHEN EXTRACT(HOUR FROM RecordDate2) BETWEEN 0 AND 6 THEN '12AM- 6AM'
+    WHEN EXTRACT(HOUR FROM RecordDate2) BETWEEN 7 AND 11 THEN '7AM - 11AM'
+    WHEN EXTRACT(HOUR FROM RecordDate2) BETWEEN 12 AND 3 THEN '12PM - 3PM'
+     WHEN EXTRACT(HOUR FROM RecordDate2) BETWEEN 4 AND 7 THEN '4PM - 7 PM'
+      WHEN EXTRACT(HOUR FROM RecordDate2) BETWEEN 8 AND 11 THEN '8PM - 11AM'
+    ELSE 'Unknown'
+  END AS time_of_day,
+FROM 
+  `bright-tv-459320.brighttv.Viewership_table` AS a 
+  Join `bright-tv-459320.brighttv.User profile_table` as b
+  ON a.UserID = b.userID
+GROUP BY 
+   time_of_day
+ORDER BY total_Views
+DESC;
